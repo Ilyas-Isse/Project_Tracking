@@ -12,7 +12,27 @@ async function verifyProjectOwner(ctx: any, projectId: any, userId: string) {
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return [];
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+      
+    if (projects.length === 0) return [];
+    
+    const tasksPromises = projects.map(p => 
+      ctx.db.query("tasks").withIndex("by_project", q => q.eq("projectId", p._id)).collect()
+    );
+    
+    const tasksNested = await Promise.all(tasksPromises);
+    const tasks = tasksNested.flat();
+    
+    return await Promise.all(tasks.map(async (t) => ({
+      ...t,
+      title: await decryptString(t.title)
+    })));
   },
 });
 
