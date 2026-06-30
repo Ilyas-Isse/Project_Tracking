@@ -16,4 +16,9 @@ export default defineSchema({
     status: v.union(v.literal("todo"), v.literal("in-progress"), v.literal("done")),
     priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
   }).index("by_project", ["projectId"]),
+  users: defineTable({
+    userId: v.string(), // Clerk user ID
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
 });

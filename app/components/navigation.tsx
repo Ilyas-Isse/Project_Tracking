@@ -87,11 +87,11 @@ export default function Navigation() {
           </div>
         </SignedIn>
         <SignedOut>
-          <SignInButton mode="modal">
+          <Link href="/sign-in" className="w-full">
             <button className="w-full bg-[hsl(var(--primary))] text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-[hsl(var(--primary))]/20 hover:scale-[1.02] transition-transform">
               Sign In
             </button>
-          </SignInButton>
+          </Link>
         </SignedOut>
       </div>
       
@@ -101,11 +101,11 @@ export default function Navigation() {
           <UserButton />
         </SignedIn>
         <SignedOut>
-          <SignInButton mode="modal">
+          <Link href="/sign-in">
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[hsl(var(--primary))] text-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
             </button>
-          </SignInButton>
+          </Link>
         </SignedOut>
       </div>
     </nav>

@@ -37,11 +37,11 @@ export default function Dashboard() {
           <p className="text-xl md:text-2xl text-zinc-500 dark:text-zinc-400 mb-10 font-medium max-w-2xl">
             A beautiful, distraction-free productivity app. Manage your workspaces, projects, and tasks securely.
           </p>
-          <SignInButton mode="modal">
+          <Link href="/sign-in">
             <button className="px-10 py-5 bg-[hsl(var(--primary))] text-white text-lg font-bold rounded-2xl shadow-xl shadow-[hsl(var(--primary))]/30 hover:scale-105 hover:shadow-2xl hover:shadow-[hsl(var(--primary))]/40 transition-all duration-300">
               Get Started for Free
             </button>
-          </SignInButton>
+          </Link>
         </div>
       </SignedOut>
 
