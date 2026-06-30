@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 export default function Dashboard() {
   const projects = useQuery(api.projects.get);
@@ -25,10 +26,30 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-full p-4 sm:p-8 animate-slide-up">
-      <div className="max-w-5xl mx-auto mt-6">
-        <h1 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent-rose))]">
-          Dashboard
-        </h1>
+      <SignedOut>
+        <div className="flex flex-col items-center justify-center min-h-[70vh] text-center max-w-3xl mx-auto px-4">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent-rose))] flex items-center justify-center shadow-2xl shadow-[hsl(var(--primary))]/20 mb-8">
+            <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">
+            Simple Project Tracing
+          </h1>
+          <p className="text-xl md:text-2xl text-zinc-500 dark:text-zinc-400 mb-10 font-medium max-w-2xl">
+            A beautiful, distraction-free productivity app. Manage your workspaces, projects, and tasks securely.
+          </p>
+          <SignInButton mode="modal">
+            <button className="px-10 py-5 bg-[hsl(var(--primary))] text-white text-lg font-bold rounded-2xl shadow-xl shadow-[hsl(var(--primary))]/30 hover:scale-105 hover:shadow-2xl hover:shadow-[hsl(var(--primary))]/40 transition-all duration-300">
+              Get Started for Free
+            </button>
+          </SignInButton>
+        </div>
+      </SignedOut>
+
+      <SignedIn>
+        <div className="max-w-5xl mx-auto mt-6">
+          <h1 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent-rose))]">
+            Dashboard
+          </h1>
         <p className="text-zinc-500 dark:text-zinc-400 mb-10 font-medium">Here's what's happening across your projects.</p>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -121,7 +142,7 @@ export default function Dashboard() {
           </div>
 
         </div>
-      </div>
+      </SignedIn>
     </div>
   );
 }

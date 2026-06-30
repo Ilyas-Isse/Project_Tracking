@@ -5,7 +5,16 @@ import { encryptString, decryptString } from "./crypto";
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const projects = await ctx.db.query("projects").collect();
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return []; // Return empty array if not logged in
+    }
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+
     return await Promise.all(projects.map(async (p) => ({
       ...p,
       name: await decryptString(p.name),
@@ -22,10 +31,16 @@ export const create = mutation({
     dueDate: v.optional(v.number())
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthenticated call to create project");
+    }
+
     const encryptedName = await encryptString(args.name);
     const encryptedDescription = args.description ? await encryptString(args.description) : undefined;
     
     return await ctx.db.insert("projects", { 
+      userId: identity.subject,
       name: encryptedName, 
       color: args.color,
       description: encryptedDescription,
@@ -43,6 +58,14 @@ export const updateProject = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const project = await ctx.db.get(args.id);
+    if (!project || project.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     const { id, description, ...updates } = args;
     const finalUpdates: any = { ...updates };
     
@@ -57,6 +80,14 @@ export const updateProject = mutation({
 export const remove = mutation({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const project = await ctx.db.get(args.id);
+    if (!project || project.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     const tasks = await ctx.db.query("tasks").withIndex("by_project", q => q.eq("projectId", args.id)).collect();
     for (const task of tasks) {
       await ctx.db.delete(task._id);
@@ -68,13 +99,20 @@ export const remove = mutation({
 export const clearAll = mutation({
   args: {},
   handler: async (ctx) => {
-    const projects = await ctx.db.query("projects").collect();
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+
     for (const p of projects) {
+      const tasks = await ctx.db.query("tasks").withIndex("by_project", q => q.eq("projectId", p._id)).collect();
+      for (const t of tasks) {
+        await ctx.db.delete(t._id);
+      }
       await ctx.db.delete(p._id);
-    }
-    const tasks = await ctx.db.query("tasks").collect();
-    for (const t of tasks) {
-      await ctx.db.delete(t._id);
     }
   }
 });

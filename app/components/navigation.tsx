@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 const DashboardIcon = ({ className }: { className?: string }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
@@ -78,6 +79,35 @@ export default function Navigation() {
           </Link>
         );
       })}
+
+      <div className="hidden lg:flex flex-1 flex-col justify-end items-start px-2 mt-auto">
+        <SignedIn>
+          <div className="flex items-center w-full py-3 px-3 hover:bg-white/50 dark:hover:bg-zinc-800/40 rounded-2xl transition-all duration-300">
+            <UserButton showName appearance={{ elements: { userButtonBox: "flex-row-reverse w-full justify-between", userButtonOuterIdentifier: "text-zinc-700 dark:text-zinc-200 font-semibold" } }} />
+          </div>
+        </SignedIn>
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button className="w-full bg-[hsl(var(--primary))] text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-[hsl(var(--primary))]/20 hover:scale-[1.02] transition-transform">
+              Sign In
+            </button>
+          </SignInButton>
+        </SignedOut>
+      </div>
+      
+      {/* Mobile Auth Button */}
+      <div className="sm:hidden flex items-center justify-center pl-2 border-l border-zinc-200 dark:border-zinc-800">
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[hsl(var(--primary))] text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            </button>
+          </SignInButton>
+        </SignedOut>
+      </div>
     </nav>
   );
 }
