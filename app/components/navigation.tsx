@@ -57,7 +57,7 @@ export default function Navigation() {
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent-rose))] flex items-center justify-center shadow-lg shadow-[hsl(var(--primary))]/20">
           <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
         </div>
-        <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-zinc-800 to-zinc-500 dark:from-zinc-100 dark:to-zinc-400">Antigravity PM</span>
+        <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-zinc-800 to-zinc-500 dark:from-zinc-100 dark:to-zinc-400">Simple Project Tracing</span>
       </div>
 
       {navItems.map((item) => {
