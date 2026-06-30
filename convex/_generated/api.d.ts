@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as crypto from "../crypto.js";
+import type * as migrate from "../migrate.js";
 import type * as projects from "../projects.js";
 import type * as tasks from "../tasks.js";
 
@@ -18,6 +20,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  crypto: typeof crypto;
+  migrate: typeof migrate;
   projects: typeof projects;
   tasks: typeof tasks;
 }>;
