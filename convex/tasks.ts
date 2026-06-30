@@ -1,17 +1,26 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { encryptString, decryptString } from "./crypto";
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("tasks").collect();
+    const tasks = await ctx.db.query("tasks").collect();
+    return await Promise.all(tasks.map(async (t) => ({
+      ...t,
+      title: await decryptString(t.title)
+    })));
   },
 });
 
 export const getByProject = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    return await ctx.db.query("tasks").withIndex("by_project", q => q.eq("projectId", args.projectId)).collect();
+    const tasks = await ctx.db.query("tasks").withIndex("by_project", q => q.eq("projectId", args.projectId)).collect();
+    return await Promise.all(tasks.map(async (t) => ({
+      ...t,
+      title: await decryptString(t.title)
+    })));
   },
 });
 
@@ -22,9 +31,10 @@ export const create = mutation({
     priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
   },
   handler: async (ctx, args) => {
+    const encryptedTitle = await encryptString(args.title);
     return await ctx.db.insert("tasks", {
       projectId: args.projectId,
-      title: args.title,
+      title: encryptedTitle,
       status: "todo",
       priority: args.priority,
     });

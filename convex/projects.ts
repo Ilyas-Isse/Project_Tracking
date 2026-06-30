@@ -1,10 +1,16 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { encryptString, decryptString } from "./crypto";
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("projects").collect();
+    const projects = await ctx.db.query("projects").collect();
+    return await Promise.all(projects.map(async (p) => ({
+      ...p,
+      name: await decryptString(p.name),
+      description: p.description ? await decryptString(p.description) : undefined,
+    })));
   },
 });
 
@@ -16,10 +22,13 @@ export const create = mutation({
     dueDate: v.optional(v.number())
   },
   handler: async (ctx, args) => {
+    const encryptedName = await encryptString(args.name);
+    const encryptedDescription = args.description ? await encryptString(args.description) : undefined;
+    
     return await ctx.db.insert("projects", { 
-      name: args.name, 
+      name: encryptedName, 
       color: args.color,
-      description: args.description,
+      description: encryptedDescription,
       dueDate: args.dueDate,
       status: "planning" // Default status
     });
@@ -34,8 +43,14 @@ export const updateProject = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, ...updates } = args;
-    await ctx.db.patch(id, updates);
+    const { id, description, ...updates } = args;
+    const finalUpdates: any = { ...updates };
+    
+    if (description !== undefined) {
+      finalUpdates.description = await encryptString(description);
+    }
+    
+    await ctx.db.patch(id, finalUpdates);
   }
 });
 
