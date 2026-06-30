@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Premium Todolist",
+  title: "Simple Project Tracing",
   description: "A beautiful, distraction-free productivity app",
 };
 
